@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 
-const JWT_SECRET = process.env.JWT_SECRET 
+const JWT_SECRET = process.env.JWT_SECRET;
 const TOKEN_EXPIRES = '24h';
 const createToken = (userId) => {
     return jwt.sign({id: userId}, JWT_SECRET, {expiresIn: TOKEN_EXPIRES});
@@ -48,8 +48,8 @@ export async function registerUser(req,res){
             message: "User registered successfully"
         });
     }
-    catch(err){
-        console.error(err);
+    catch(error){
+        console.error(error);
         res.status(500).json({
             success: false,
             message: "Server error"
@@ -91,8 +91,8 @@ export async function loginUser(req,res){
             message: "User logged in successfully"
         }); 
     }
-    catch(err){
-        console.error(err);
+    catch(error){
+        console.error(error);
         res.status(500).json({
             success: false,
             message: "Server error"
@@ -103,7 +103,7 @@ export async function loginUser(req,res){
 //GET USER DETAILS
 export async function getCurrentUser(req,res){
     try{
-        const user = await User.findById(req.user.id).select("name email");
+        const user = await User.findById(req.user._id).select("name email");
         if(!user){
             return res.status(404).json({
                 success: false,
@@ -112,8 +112,8 @@ export async function getCurrentUser(req,res){
         }
         res.json({success: true, user});
     }
-    catch(err){
-        console.error(err);
+    catch(error){
+        console.error(error);
         res.status(500).json({
             success: false,
             message: "Server error"
@@ -131,22 +131,22 @@ export async function updateProfile(req,res){
         });
     }
     try{
-        const exists = await User.findOne({email, _id:{$ne: req.user.id}});
+        const exists = await User.findOne({email, _id:{$ne: req.user._id}});
         if(exists){
             return res.status(409).json({
                 success: false,
                 message: "Email already in use by another account"
-            })
+            });
         }
-        const user = await User.findByIdAndUpdate(req.user.id, {name, email}, {new: true, runValidators: true, select:"name email"});
+        const user = await User.findByIdAndUpdate(req.user._id, {name, email}, {new: true, runValidators: true}).select("name email");
         res.json({
             success: true,
             user,
             message: "Profile updated successfully"
         });
     }
-    catch(err){
-        console.error(err);
+    catch(error){
+        console.error(error);
         res.status(500).json({
             success: false,
             message: "Server error"
@@ -165,7 +165,7 @@ export async function changePassword(req,res){
 
     }
     try{
-        const user = await User.findById(req.user.id).select("password");
+        const user = await User.findById(req.user._id).select("password");
         if(!user){
             return res.status(404).json({
                 success: false,
@@ -188,8 +188,8 @@ export async function changePassword(req,res){
             message: "Password changed successfully"
         });
     }
-    catch(err){
-        console.error(err);
+    catch(error){
+        console.error(error);
         res.status(500).json({
             success: false,
             message: "Server error"
