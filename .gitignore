@@ -1,5 +1,10 @@
 node_modules
 .env
+.env.*
+!.env.example
 dist
 build
 coverage
+
+# Generated Excel exports — must never be committed (they can contain user data)
+*.xlsx

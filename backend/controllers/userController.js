@@ -2,197 +2,124 @@ import User from '../models/userModel.js';
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { env } from '../config/env.js';
+import asyncHandler from '../utils/asyncHandler.js';
+import AppError from '../utils/AppError.js';
+import { isNonEmptyString } from '../utils/validators.js';
 
+const createToken = (userId) =>
+    jwt.sign({ id: userId }, env.JWT_SECRET, { expiresIn: env.TOKEN_EXPIRES });
 
-const JWT_SECRET = process.env.JWT_SECRET;
-const TOKEN_EXPIRES = '24h';
-const createToken = (userId) => {
-    return jwt.sign({id: userId}, JWT_SECRET, {expiresIn: TOKEN_EXPIRES});
-}
+// REGISTER A USER
+export const registerUser = asyncHandler(async (req, res) => {
+    const { name, email, password } = req.body;
 
-//REGISTER A USER
-export async function registerUser(req,res){
-    const {name,email,password} = req.body;
-    if(!name||!email||!password){
-        return res.status(400).json({
-            success: false,
-            message: "Please fill all the fields"
-        });
+    if (!isNonEmptyString(name) || !isNonEmptyString(email) || !isNonEmptyString(password)) {
+        throw new AppError('Please fill all the fields', 400);
     }
-    if(!validator.isEmail(email)){
-        return res.status(400).json({
-            success: false,
-            message: "Please enter a valid email"
-        });
-    }
-    if(password.length<8){
-        return res.status(400).json({
-            success: false,
-            message: "Password must be at least 8 characters long"
-        });
-    }
-    try{
-        if(await User.findOne({email})){
-            return res.status(409).json({
-                success: false,
-                message: "User already exists"
-            })
-        }
-        const hashed = await bcrypt.hash(password,10);
-        const user = await User.create({ name, email, password: hashed});
-        const token  = createToken(user._id);
-        res.status(201).json({
-            success: true,
-            token,
-            user: {id: user._id, name: user.name, email: user.email},
-            message: "User registered successfully"
-        });
-    }
-    catch(error){
-        console.error(error);
-        res.status(500).json({
-            success: false,
-            message: "Server error"
-        });
-    }
-}
 
-//LOGIN A USER
+    const normalizedEmail = email.toLowerCase().trim();
+    if (!validator.isEmail(normalizedEmail)) {
+        throw new AppError('Please enter a valid email', 400);
+    }
+    if (password.length < 8) {
+        throw new AppError('Password must be at least 8 characters long', 400);
+    }
 
-export async function loginUser(req,res){
-    const {email,password} = req.body;
-    if(!email||!password){
-        return res.status(400).json({
-            success: false,
-            message: "Both fields are required"
-        })
+    if (await User.findOne({ email: normalizedEmail })) {
+        throw new AppError('User already exists', 409);
     }
-    try{
-        const user = await User.findOne({email});
-        if(!user){
-            return res.status(401).json({
-                success: false,
-                message: "Invalid credentials"
-            });
-        }
 
-        const match = await bcrypt.compare(password, user.password);
-        if(!match){
-            return res.status(401).json({
-                success: false,
-                message: "Invalid credentials"
-            });
-        }
-        const token = createToken(user._id);
-        res.status(200).json({
-            success: true,
-            token,
-            user: {id: user._id, name: user.name, email: user.email},
-            message: "User logged in successfully"
-        }); 
-    }
-    catch(error){
-        console.error(error);
-        res.status(500).json({
-            success: false,
-            message: "Server error"
-        });
-    }
-}
+    const hashed = await bcrypt.hash(password, 10);
+    const user = await User.create({ name: name.trim(), email: normalizedEmail, password: hashed });
+    const token = createToken(user._id);
 
-//GET USER DETAILS
-export async function getCurrentUser(req,res){
-    try{
-        const user = await User.findById(req.user._id).select("name email");
-        if(!user){
-            return res.status(404).json({
-                success: false,
-                message: "User not found"
-            });
-        }
-        res.json({success: true, user});
-    }
-    catch(error){
-        console.error(error);
-        res.status(500).json({
-            success: false,
-            message: "Server error"
-        });
-    }
-}
+    res.status(201).json({
+        success: true,
+        token,
+        user: { id: user._id, name: user.name, email: user.email },
+        message: 'User registered successfully'
+    });
+});
 
-//UPDATE USER PROFILE
-export async function updateProfile(req,res){
-    const {name, email} = req.body;
-    if(!name||!email||!validator.isEmail(email)){
-        return res.status(400).json({
-            success: false,
-            message: "Please fill all the fields with valid information"
-        });
-    }
-    try{
-        const exists = await User.findOne({email, _id:{$ne: req.user._id}});
-        if(exists){
-            return res.status(409).json({
-                success: false,
-                message: "Email already in use by another account"
-            });
-        }
-        const user = await User.findByIdAndUpdate(req.user._id, {name, email}, {new: true, runValidators: true}).select("name email");
-        res.json({
-            success: true,
-            user,
-            message: "Profile updated successfully"
-        });
-    }
-    catch(error){
-        console.error(error);
-        res.status(500).json({
-            success: false,
-            message: "Server error"
-        });
-    }   
-}
+// LOGIN A USER
+export const loginUser = asyncHandler(async (req, res) => {
+    const { email, password } = req.body;
 
-//CHANGE PASSWORD
-export async function changePassword(req,res){
-    const {currentPassword, newPassword} = req.body;
-    if(!currentPassword||!newPassword|| newPassword.length<8){
-        return res.status(400).json({
-            success: false,
-            message: "Password is Invalid or too short" 
-        });
+    if (!isNonEmptyString(email) || !isNonEmptyString(password)) {
+        throw new AppError('Both fields are required', 400);
+    }
 
-    }
-    try{
-        const user = await User.findById(req.user._id).select("password");
-        if(!user){
-            return res.status(404).json({
-                success: false,
-                message: "User not found"
-            });
-        }
+    const normalizedEmail = email.toLowerCase().trim();
+    const user = await User.findOne({ email: normalizedEmail }).select('+password');
 
-        const match = await bcrypt.compare(currentPassword, user.password);
-        if(!match){
-            return res.status(401).json({
-                success: false,
-                message: "Current password is incorrect"
-            });
-        }
-        
-        user.password = await bcrypt.hash(newPassword,10);
-        await user.save();
-        res.json({
-            success: true,
-            message: "Password changed successfully"
-        });
+    // Same message whether the email or the password is wrong — avoids user enumeration.
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+        throw new AppError('Invalid credentials', 401);
     }
-    catch(error){
-        console.error(error);
-        res.status(500).json({
-            success: false,
-            message: "Server error"
-        });
+
+    const token = createToken(user._id);
+    res.json({
+        success: true,
+        token,
+        user: { id: user._id, name: user.name, email: user.email },
+        message: 'User logged in successfully'
+    });
+});
+
+// GET USER DETAILS — req.user is already loaded by authMiddleware (no extra DB hit).
+export const getCurrentUser = asyncHandler(async (req, res) => {
+    const { _id, name, email } = req.user;
+    res.json({ success: true, user: { id: _id, name, email } });
+});
+
+// UPDATE USER PROFILE
+export const updateProfile = asyncHandler(async (req, res) => {
+    const { name, email } = req.body;
+
+    if (!isNonEmptyString(name) || !isNonEmptyString(email)) {
+        throw new AppError('Please fill all the fields with valid information', 400);
     }
-}
+
+    const normalizedEmail = email.toLowerCase().trim();
+    if (!validator.isEmail(normalizedEmail)) {
+        throw new AppError('Please enter a valid email', 400);
+    }
+
+    const exists = await User.findOne({ email: normalizedEmail, _id: { $ne: req.user._id } });
+    if (exists) {
+        throw new AppError('Email already in use by another account', 409);
+    }
+
+    const user = await User.findByIdAndUpdate(
+        req.user._id,
+        { name: name.trim(), email: normalizedEmail },
+        { new: true, runValidators: true }
+    ).select('name email');
+
+    res.json({ success: true, user, message: 'Profile updated successfully' });
+});
+
+// CHANGE PASSWORD
+export const changePassword = asyncHandler(async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!isNonEmptyString(currentPassword) || !isNonEmptyString(newPassword) || newPassword.length < 8) {
+        throw new AppError('Password is invalid or too short', 400);
+    }
+
+    const user = await User.findById(req.user._id).select('+password');
+    if (!user) {
+        throw new AppError('User not found', 404);
+    }
+
+    const match = await bcrypt.compare(currentPassword, user.password);
+    if (!match) {
+        throw new AppError('Current password is incorrect', 401);
+    }
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+
+    res.json({ success: true, message: 'Password changed successfully' });
+});

@@ -1,174 +1,139 @@
 import expenseModel from "../models/expenseModel.js";
-import getDateRange from "../utils/dateFilter.js";
 import XLSX from 'xlsx';
+import getDateRange from "../utils/dateFilter.js";
+import asyncHandler from "../utils/asyncHandler.js";
+import AppError from "../utils/AppError.js";
+import { isNonEmptyString, parseAmount, parseDate, parsePagination } from "../utils/validators.js";
 
-//add expense
+const RECENT_LIMIT = 5;
 
-export async function addExpense(req,res){
-    const userId = req.user._id;
-    const {description, amount, category, date} = req.body;
-    try{
-        if(!description || !amount || !category || !date){
-            return res.status(400).json({
-                success: false,
-                message: "All fields are required"
-            });
-        }
-        const newExpense = new expenseModel({
-            userId,
-            description,
-            amount,
-            category,
-            date: new Date(date)
-        });
-        await newExpense.save();
-        return res.status(201).json({
-            success: true,
-            data: newExpense,
-            message: "Expense added successfully"
-        });
-    }
-    catch(error){
-        console.log(error);
-        res.status(500).json({
-            success: false,
-            message: "Server error"
-        });
-    }      
-}
+// ADD EXPENSE
+export const addExpense = asyncHandler(async (req, res) => {
+    const { description, category } = req.body;
+    const amount = parseAmount(req.body.amount);
+    const date = parseDate(req.body.date);
 
-//to get the expense(all)
-export async function getAllExpenses(req,res){
-    const userId = req.user._id;
-    try{
-        const expense = await expenseModel.find({userId}).sort({date: -1});
-        res.json({success: true, data: expense});
-    }
-    catch(error){
-        console.log(error);
-        res.status(500).json({
-            success: false,
-            message: "Server error"
-        });
-    }
-}
-
-//update an expense
-export async function updateExpense(req,res){
-    const {id} = req.params;
-    const userId = req.user._id;
-    const {description, amount} = req.body;
-
-    try{
-        const updatedExpense = await expenseModel.findOneAndUpdate(
-            {_id: id, userId},
-            {description,amount},
-            {new: true}
+    if (!isNonEmptyString(description) || !isNonEmptyString(category) || amount === null || date === null) {
+        throw new AppError(
+            'All fields are required (amount must be a positive number, date must be valid)',
+            400
         );
-        if(!updatedExpense){
-            return res.status(404).json({
-                success: false,
-                message: "Expense not found"
-            });
-        }
-        return res.json({success: true, message: "Expense updated successfully", data: updatedExpense});
-
     }
-    catch(error){
-        console.log(error);
-        res.status(500).json({
-            success: false,
-            message: "Server error"
-        });
+
+    const expense = await expenseModel.create({
+        userId: req.user._id,
+        description: description.trim(),
+        amount,
+        category: category.trim(),
+        date,
+    });
+
+    res.status(201).json({ success: true, data: expense, message: 'Expense added successfully' });
+});
+
+// GET ALL EXPENSES (paginated)
+export const getAllExpenses = asyncHandler(async (req, res) => {
+    const { page, limit, skip } = parsePagination(req.query);
+    const filter = { userId: req.user._id };
+
+    const [items, total] = await Promise.all([
+        expenseModel.find(filter).sort({ date: -1 }).skip(skip).limit(limit),
+        expenseModel.countDocuments(filter),
+    ]);
+
+    res.json({
+        success: true,
+        data: items,
+        pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    });
+});
+
+// UPDATE AN EXPENSE (owner-scoped; supports all editable fields)
+export const updateExpense = asyncHandler(async (req, res) => {
+    const updates = {};
+
+    if (req.body.description !== undefined) {
+        if (!isNonEmptyString(req.body.description)) throw new AppError('Description must be a non-empty string', 400);
+        updates.description = req.body.description.trim();
     }
-}
-
-//to delete an expense
-export async function deleteExpense(req,res){
-    try{
-        const expense  = await expenseModel.findByIdAndDelete(req.params.id);
-        if(!expense){
-            return res.status(404).json({
-                success: false,
-                message: "Expense not found"
-            });
-        }
-        return res.status(200).json({
-            success: true,
-            message: "Expense deleted successfully!" 
-        })
+    if (req.body.category !== undefined) {
+        if (!isNonEmptyString(req.body.category)) throw new AppError('Category must be a non-empty string', 400);
+        updates.category = req.body.category.trim();
     }
-    catch(error){
-        console.log(error);
-        return res.status(500).json({
-            success: false,
-            message: "Server error"
-        });
+    if (req.body.amount !== undefined) {
+        const amount = parseAmount(req.body.amount);
+        if (amount === null) throw new AppError('Amount must be a positive number', 400);
+        updates.amount = amount;
     }
-}
-
-//to download expense details in excel format
-export async function downloadExpenseExcel(req,res){
-    const userId = req.user._id;
-    try{
-        const expense = await expenseModel.find({userId}).sort({date: -1});
-        const plainData = expense.map((exp)=>({
-            Description: exp.description,
-            Amount: exp.amount,
-            Category: exp.category,
-            Date: new Date(exp.date).toLocaleDateString()
-        }));
-
-        const worksheet = XLSX.utils.json_to_sheet(plainData);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Expenses");
-        XLSX.writeFile(workbook, "expense_details.xlsx");
-        res.download("expense_details.xlsx")
+    if (req.body.date !== undefined) {
+        const date = parseDate(req.body.date);
+        if (date === null) throw new AppError('Date must be valid', 400);
+        updates.date = date;
     }
-    catch(error){
-        console.log(error);
-        res.status(500).json({
-            success: false,
-            message: "Server error"
-        });
+    if (Object.keys(updates).length === 0) {
+        throw new AppError('No valid fields to update', 400);
     }
-}
 
-//to get expense overview
-export async function getExpenseOverview(req,res){
-    try{
-        const userId = req.user._id;
-        const {range = "monthly"} = req.query;
-        const {start,end} = getDateRange(range);
+    const expense = await expenseModel.findOneAndUpdate(
+        { _id: req.params.id, userId: req.user._id }, // owner scope prevents editing others' data
+        updates,
+        { new: true, runValidators: true }
+    );
+    if (!expense) throw new AppError('Expense not found', 404);
 
-        const expense = await expenseModel.find({
-            userId: userId,
-            date: {$gte: start,$lte: end}
-        }).sort({date: -1});
+    res.json({ success: true, message: 'Expense updated successfully', data: expense });
+});
 
-        const totalExpense = expense.reduce((acc, cur) => acc + cur.amount, 0);
-        const averageExpense = expense.length > 0 ? totalExpense / expense.length : 0;
-        const numberOfTransactions = expense.length;
+// DELETE AN EXPENSE (owner-scoped — fixes the previous IDOR)
+export const deleteExpense = asyncHandler(async (req, res) => {
+    const expense = await expenseModel.findOneAndDelete({ _id: req.params.id, userId: req.user._id });
+    if (!expense) throw new AppError('Expense not found', 404);
 
-        const recentTransactions = expense.slice(0, 5);
+    res.json({ success: true, message: 'Expense deleted successfully' });
+});
 
-        return res.json({
-            success: true,
-            data: {
-                totalExpense,
-                averageExpense,
-                numberOfTransactions,
-                recentTransactions,
-                range
-            }
-        });
+// DOWNLOAD EXPENSES AS EXCEL (streamed from memory — no shared file on disk)
+export const downloadExpenseExcel = asyncHandler(async (req, res) => {
+    const expenses = await expenseModel.find({ userId: req.user._id }).sort({ date: -1 });
 
-    }
-    catch(error){
-        console.log(error);
-        res.status(500).json({
-            success: false,
-            message: "Server error"
-        });
-    }
-}
+    const rows = expenses.map((exp) => ({
+        Description: exp.description,
+        Amount: exp.amount,
+        Category: exp.category,
+        Date: new Date(exp.date).toLocaleDateString(),
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(rows);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Expenses');
+    const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+
+    res.setHeader('Content-Disposition', 'attachment; filename="expense_details.xlsx"');
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.send(buffer);
+});
+
+// EXPENSE OVERVIEW (totals for a date range)
+export const getExpenseOverview = asyncHandler(async (req, res) => {
+    const { range = 'monthly' } = req.query;
+    const { start, end } = getDateRange(range);
+
+    const expenses = await expenseModel
+        .find({ userId: req.user._id, date: { $gte: start, $lte: end } })
+        .sort({ date: -1 });
+
+    const totalExpense = expenses.reduce((acc, cur) => acc + cur.amount, 0);
+    const numberOfTransactions = expenses.length;
+    const averageExpense = numberOfTransactions > 0 ? totalExpense / numberOfTransactions : 0;
+
+    res.json({
+        success: true,
+        data: {
+            totalExpense,
+            averageExpense,
+            numberOfTransactions,
+            recentTransactions: expenses.slice(0, RECENT_LIMIT),
+            range,
+        },
+    });
+});

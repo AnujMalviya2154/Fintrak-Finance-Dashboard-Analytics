@@ -1,21 +1,24 @@
 import mongoose from 'mongoose';
 
 const expenseSchema = new mongoose.Schema({
-    description : {
-        type : String,
-        required : true
+    description: {
+        type: String,
+        required: true,
+        trim: true
     },
-    amount : {
-        type : Number,
-        required : true
+    amount: {
+        type: Number,
+        required: true,
+        min: [0, 'Amount cannot be negative']
     },
     category: {
         type: String,
-        required : true,
+        required: true,
+        trim: true
     },
     date: {
         type: Date,
-        required : true
+        required: true
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -24,11 +27,14 @@ const expenseSchema = new mongoose.Schema({
     },
     type: {
         type: String,
-        default: "expense",  
+        default: "expense",
     },
-},{
+}, {
     timestamps: true
-})
+});
+
+// Every query filters by userId and sorts by date — index it or it's a collection scan.
+expenseSchema.index({ userId: 1, date: -1 });
 
 const expenseModel = mongoose.models.expense || mongoose.model('expense', expenseSchema);
 export default expenseModel;

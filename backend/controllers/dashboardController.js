@@ -1,61 +1,54 @@
 import incomeModel from "../models/incomeModel.js";
 import expenseModel from "../models/expenseModel.js";
+import asyncHandler from "../utils/asyncHandler.js";
 
+const RECENT_LIMIT = 10;
 
-export async function getDashboardOverview(req,res){
+export const getDashboardOverview = asyncHandler(async (req, res) => {
     const userId = req.user._id;
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const dateFilter = { userId, date: { $gte: startOfMonth, $lte: now } };
 
-    try{
-        const incomes = await incomeModel.find({
-            userId, 
-            date: {$gte: startOfMonth, $lte: now},
-        }).lean();
+    // Run both reads in parallel — they don't depend on each other.
+    const [incomes, expenses] = await Promise.all([
+        incomeModel.find(dateFilter).lean(),
+        expenseModel.find(dateFilter).lean(),
+    ]);
 
-        const expenses = await expenseModel.find({
-            userId,
-            date: {$gte: startOfMonth, $lte: now},
-        }).lean();
+    const monthlyIncome = incomes.reduce((acc, cur) => acc + Number(cur.amount || 0), 0);
+    const monthlyExpense = expenses.reduce((acc, cur) => acc + Number(cur.amount || 0), 0);
+    const savings = monthlyIncome - monthlyExpense;
+    const savingsRate = monthlyIncome === 0 ? 0 : Math.round((savings / monthlyIncome) * 100);
 
-        const monthlyIncome = incomes.reduce((acc, cur) => acc + Number(cur.amount || 0), 0);
-        const monthlyExpense = expenses.reduce((acc, cur) => acc + Number(cur.amount || 0), 0);
-        const savings = monthlyIncome - monthlyExpense;
-        const savingsRate = monthlyIncome === 0 ? 0 : Math.round((savings / monthlyIncome) * 100);
-
-        const recentTransactions = [
+    const recentTransactions = [
         ...incomes.map((i) => ({ ...i, type: "income" })),
         ...expenses.map((e) => ({ ...e, type: "expense" })),
-        ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    ]
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .slice(0, RECENT_LIMIT);
 
-        const spendByCategory = {};
-        for (const exp of expenses) {
+    const spendByCategory = {};
+    for (const exp of expenses) {
         const cat = exp.category || "Other";
         spendByCategory[cat] = (spendByCategory[cat] || 0) + Number(exp.amount || 0);
-        }
+    }
 
-        const expenseDistribution = Object.entries(spendByCategory).map(([category, amount]) => ({
+    const expenseDistribution = Object.entries(spendByCategory).map(([category, amount]) => ({
         category,
         amount,
         percent: monthlyExpense === 0 ? 0 : Math.round((amount / monthlyExpense) * 100),
-        }));
-        return res.status(200).json({
-            success: true,
-            data: {
-                monthlyIncome,
-                monthlyExpense,
-                savings,
-                savingsRate,
-                recentTransactions,
-                expenseDistribution
-            } 
-        });
-    }
-    catch(error){
-        console.error("Get dashboard overview Error:", error);
-        res.status(500).json({
-            success: false,
-            message: "Dashboard Fetch failed"
-        });
-    }
-}
+    }));
+
+    res.status(200).json({
+        success: true,
+        data: {
+            monthlyIncome,
+            monthlyExpense,
+            savings,
+            savingsRate,
+            recentTransactions,
+            expenseDistribution,
+        },
+    });
+});

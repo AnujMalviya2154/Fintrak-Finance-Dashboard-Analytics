@@ -1,34 +1,40 @@
 import mongoose from 'mongoose';
 
 const incomeSchema = new mongoose.Schema({
-    description : {
-    type : String,
-    required : true
-  },
-  amount : {
-    type : Number,
-    required : true
-  },
-  category: {
-    type: String,
-    required : true,
-  },
-  date: {
-    type: Date,
-    required : true
-  },
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "user",
-    required: true,
-  },
-  type: {
-    type: String,
-    default: "income",  
-  },
-},{
+    description: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    amount: {
+        type: Number,
+        required: true,
+        min: [0, 'Amount cannot be negative']
+    },
+    category: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    date: {
+        type: Date,
+        required: true
+    },
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user",
+        required: true,
+    },
+    type: {
+        type: String,
+        default: "income",
+    },
+}, {
     timestamps: true
 });
+
+// Every query filters by userId and sorts by date — index it or it's a collection scan.
+incomeSchema.index({ userId: 1, date: -1 });
 
 const incomeModel = mongoose.models.income || mongoose.model("income", incomeSchema);
 
