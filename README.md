@@ -1,102 +1,345 @@
-# FinTrak
+<div align="center">
 
-Finance Dashboard & Analytics Platform
+# 💰 Fintrak
 
-A modern full-stack MERN Finance Dashboard & Analytics Platform featuring secure JWT authentication, income and expense management, interactive analytics, charts, and financial insights.
+### Modern Finance Dashboard & Analytics Platform
 
-## Features
+A full-stack MERN application for tracking income, expenses, and financial insights with secure authentication, interactive analytics, and a clean modern dashboard.
 
-- **JWT Authentication:** Secure user registration, login, and protected routes.
-- **Income & Expense Tracking:** Add, edit, and delete financial records categorized intuitively.
-- **Analytics Visualization:** Interactive charts powered by Recharts for data-driven insights.
-- **Excel Exports:** Instantly generate and download spreadsheets of transaction histories.
-- **Dark Mode:** System-wide dark theme toggle persisting across sessions.
-- **Responsive UI:** Built with Tailwind CSS v4, optimized for desktops and tablets.
-- **Secure Architecture:** Data ownership validation, rate-limiting, and error isolation.
+<!-- Add after deployment -->
+<!-- Live Demo: https://your-demo.vercel.app -->
 
-## Tech Stack
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=white)]()
+[![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)]()
+[![MongoDB](https://img.shields.io/badge/MongoDB-Database-47A248?style=for-the-badge&logo=mongodb&logoColor=white)]()
+[![JWT](https://img.shields.io/badge/JWT-Authentication-000000?style=for-the-badge&logo=jsonwebtokens)]()
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-v4-38BDF8?style=for-the-badge&logo=tailwindcss&logoColor=white)]()
 
-**Frontend:**
+</div>
+
+---
+
+# 📌 Overview
+
+Fintrak is a production-ready full-stack finance management application that enables users to securely manage income and expenses while visualizing financial performance through interactive dashboards and analytics.
+
+The application was designed following modern full-stack development practices including modular architecture, RESTful APIs, JWT authentication, reusable React components, and responsive UI design.
+
+---
+
+# ✨ Features
+
+## 🔐 Authentication
+
+- Secure JWT Authentication
+- User Registration
+- User Login
+- Protected Routes
+- Password Hashing using bcrypt
+- Profile Management
+
+---
+
+## 💵 Income Management
+
+- Add Income
+- Edit Income
+- Delete Income
+- Search Income
+- Category Filtering
+- Monthly Analytics
+- Export Income Data (Excel)
+
+---
+
+## 💸 Expense Management
+
+- Add Expenses
+- Edit Expenses
+- Delete Expenses
+- Search Expenses
+- Category Filtering
+- Monthly Analytics
+- Export Expense Data (Excel)
+
+---
+
+## 📊 Dashboard Analytics
+
+- Monthly Income
+- Monthly Expenses
+- Net Savings
+- Savings Rate
+- Monthly Overview Charts
+- Expense Category Distribution
+- Recent Transactions
+- Real-time Statistics
+
+---
+
+## 🎨 User Experience
+
+- Responsive Layout
+- Dark / Light Theme
+- Beautiful Dashboard UI
+- Empty States
+- Interactive Charts
+- Toast Notifications
+- Smooth Micro Animations
+
+---
+
+# 🛠 Tech Stack
+
+## Frontend
+
 - React 19
 - Vite
 - Tailwind CSS v4
-- React Router DOM
-- React Hook Form
+- React Router
+- Axios
 - Recharts
-- Lucide React
+- React Hot Toast
 
-**Backend:**
-- Node.js & Express
-- MongoDB & Mongoose
-- JSON Web Tokens (JWT)
+---
+
+## Backend
+
+- Node.js
+- Express.js
+- MongoDB
+- Mongoose
+- JWT Authentication
 - bcryptjs
-- XLSX (for Excel generation)
+- Validator
+- XLSX Export
 
-## Installation & Setup
+---
 
-1. **Clone the repository:**
-   ```bash
-   git clone <repository-url>
-   cd finance-dashboard-platform
-   ```
+## Tools
 
-2. **Backend Setup:**
-   ```bash
-   cd backend
-   npm install
-   ```
-   Create a `.env` file in the `backend` directory (refer to `.env.example`).
-   ```bash
-   npm run dev
-   ```
+- Git
+- GitHub
+- VS Code
 
-3. **Frontend Setup:**
-   ```bash
-   cd frontend
-   npm install
-   ```
-   Create a `.env` file in the `frontend` directory (refer to `.env.example`).
-   ```bash
-   npm run dev
-   ```
+---
+
+# 📂 Project Structure
+
+```
+Fintrak/
+│
+├── frontend/
+│   ├── src/
+│   ├── components/
+│   ├── pages/
+│   ├── layouts/
+│   ├── hooks/
+│   ├── context/
+│   ├── utils/
+│   └── assets/
+│
+├── backend/
+│   ├── config/
+│   ├── controllers/
+│   ├── middleware/
+│   ├── models/
+│   ├── routes/
+│   ├── utils/
+│   └── server.js
+│
+└── README.md
+```
+
+---
+
+# 🔐 Authentication Flow
+
+```
+User
+
+↓
+
+Register/Login
+
+↓
+
+JWT Generated
+
+↓
+
+Stored Securely
+
+↓
+
+Authenticated Requests
+
+↓
+
+Protected Backend APIs
+
+↓
+
+MongoDB
+```
+
+---
+
+# 📊 Dashboard Preview
+
+### Dashboard
+
+> Displays overall financial summary including income, expenses, savings, and visual analytics.
+
+---
+
+### Income Management
+
+> Manage and monitor all income sources with category-wise filtering and export support.
+
+---
+
+### Expense Management
+
+> Track expenses with detailed analytics and category distribution.
+
+---
+
+### Profile & Settings
+
+> Manage profile details, preferences, notifications, and appearance.
+
+---
+
+# 🚀 Getting Started
+
+## Clone Repository
+
+```bash
+git clone https://github.com/AnujMalviya2154/Fintrak-Finance-Dashboard-Analytics.git
+
+cd Fintrak-Finance-Dashboard-Analytics
+```
+
+---
+
+## Backend Setup
+
+```bash
+cd backend
+
+npm install
+
+npm start
+```
+
+---
+
+## Frontend Setup
+
+```bash
+cd frontend
+
+npm install
+
+npm run dev
+```
+
+---
 
 ## Environment Variables
 
-### Backend (`backend/.env`)
-- `PORT` (e.g., 4000)
-- `MONGO_URI` (MongoDB connection string)
-- `JWT_SECRET` (A strong, random 64-character secret)
-- `TOKEN_EXPIRES` (e.g., 24h)
-- `CLIENT_ORIGINS` (Comma-separated origins for CORS)
+Create a `.env` file inside the backend folder.
 
-### Frontend (`frontend/.env`)
-- `VITE_API_BASE_URL` (e.g., http://localhost:4000/api)
+```env
+PORT=5000
 
-## Folder Structure
+MONGO_URI=YOUR_MONGODB_CONNECTION_STRING
 
-```
-├── backend/
-│   ├── config/          # DB config
-│   ├── controllers/     # Route logic
-│   ├── middleware/      # Auth, Error Handling, Security
-│   ├── models/          # Mongoose Schemas
-│   ├── routes/          # Express Routers
-│   └── utils/           # Shared utilities (AppError, asyncHandler)
-└── frontend/
-    ├── public/
-    └── src/
-        ├── assets/      # Static files & constants
-        ├── components/  # Atomic UI components & Layouts
-        ├── context/     # Auth & Toast state providers
-        ├── pages/       # Route-level view components
-        ├── services/    # Axios API abstractions
-        └── utils/       # Formatting & helper functions
+JWT_SECRET=YOUR_SECRET_KEY
 ```
 
-## Future Improvements
+---
 
-- Add comprehensive Unit & Integration Tests (Jest, React Testing Library).
-- Refactor massive page components (Income.jsx / Expense.jsx) into smaller modular sub-components.
-- Implement server-side pagination integrated with URL search parameters.
-- Add OAuth2 (Google/GitHub) authentication.
-- Set up a CI/CD pipeline via GitHub Actions.
+# 📸 Screenshots
+
+Add screenshots after deployment.
+
+Example:
+
+```
+Dashboard
+
+Income
+
+Expense
+
+Dark Mode
+
+Profile
+
+Settings
+```
+
+---
+
+# 🌟 Highlights
+
+- Production-ready MERN Architecture
+- RESTful API Design
+- JWT Authentication
+- Responsive Dashboard
+- Interactive Analytics
+- Dark Mode Support
+- Excel Export
+- Modular Folder Structure
+- Clean UI Components
+- Reusable React Architecture
+
+---
+
+# 📈 Future Improvements (v2)
+
+- Google OAuth Authentication
+- AI-powered Expense Categorization
+- Budget Planning
+- Savings Goals
+- Recurring Transactions
+- Email Reports
+- PDF Reports
+- Multi-currency Support
+- Financial Insights using AI
+- PWA Support
+
+---
+
+# 🤝 Contributing
+
+Contributions, feature suggestions, and improvements are always welcome.
+
+Feel free to fork the repository and open a Pull Request.
+
+---
+
+# 👨‍💻 Author
+
+## Anuj Malviya
+
+B.Tech Computer Science Engineering
+
+VIT Bhopal University
+
+### Connect with me
+
+- GitHub: https://github.com/AnujMalviya2154
+- LinkedIn: https://linkedin.com/in/anujmalviya764
+
+---
+
+<div align="center">
+
+### ⭐ If you found this project helpful, consider giving it a star!
+
+Made with ❤️ using the MERN Stack
+
+</div>
