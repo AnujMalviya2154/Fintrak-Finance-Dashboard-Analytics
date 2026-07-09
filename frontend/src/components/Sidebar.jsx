@@ -92,10 +92,10 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }) {
                 <Link
                   to={path}
                   title={isCollapsed ? label : undefined}
-                  className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ease-out ${
                     isActive(path)
-                      ? 'bg-indigo-50 text-indigo-700'
-                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800'
+                      ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400'
+                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800/50 dark:hover:text-slate-200'
                   } ${isCollapsed ? 'justify-center' : ''}`}
                 >
                   <Icon size={18} className="shrink-0" />
@@ -111,7 +111,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }) {
           <button
             onClick={handleLogout}
             title={isCollapsed ? 'Log Out' : undefined}
-            className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-rose-50 hover:text-rose-600 transition-colors ${
+            className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-500/10 dark:hover:text-rose-400 transition-colors duration-200 ease-out ${
               isCollapsed ? 'justify-center' : ''
             }`}
           >
@@ -170,10 +170,10 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }) {
                   <li key={path}>
                     <Link
                       to={path}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                      className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors duration-200 ease-out ${
                         isActive(path)
-                          ? 'bg-indigo-50 text-indigo-700'
-                          : 'text-slate-600 hover:bg-slate-50'
+                          ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400'
+                          : 'text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800/50'
                       }`}
                     >
                       <Icon size={18} />
@@ -188,7 +188,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }) {
             <div className="p-3 border-t border-slate-100">
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-600 hover:bg-rose-50 hover:text-rose-600 transition-colors"
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-500/10 dark:hover:text-rose-400 transition-colors duration-200 ease-out"
               >
                 <LogOut size={18} />
                 Log Out

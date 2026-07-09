@@ -206,7 +206,7 @@ export default function Profile() {
       <div className="bg-white rounded-xl border border-slate-100 p-6">
         <div className="flex items-center gap-2 mb-5">
           <User size={16} className="text-slate-500" />
-          <h3 className="text-sm font-semibold text-slate-700">Personal Information</h3>
+          <h3 className="text-sm font-semibold text-slate-700 tracking-tight">Personal Information</h3>
         </div>
         <ProfileForm user={user} />
       </div>
@@ -215,7 +215,7 @@ export default function Profile() {
       <div className="bg-white rounded-xl border border-slate-100 p-6">
         <div className="flex items-center gap-2 mb-5">
           <ShieldCheck size={16} className="text-slate-500" />
-          <h3 className="text-sm font-semibold text-slate-700">Change Password</h3>
+          <h3 className="text-sm font-semibold text-slate-700 tracking-tight">Change Password</h3>
         </div>
         <PasswordForm />
       </div>

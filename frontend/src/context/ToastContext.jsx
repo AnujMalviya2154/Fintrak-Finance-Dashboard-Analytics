@@ -8,6 +8,9 @@ export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([]);
 
   const addToast = useCallback((message, type = 'info', duration = 3500) => {
+    const isEnabled = localStorage.getItem('notifications') !== 'false';
+    if (!isEnabled && type !== 'error') return; // Always show errors, but block others if disabled
+
     const id = ++idCounter;
     setToasts(prev => [...prev, { id, message, type }]);
     setTimeout(() => {

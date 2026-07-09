@@ -410,7 +410,7 @@ export default function Expense() {
                 </tr>
               ) : (
                 filtered.map(exp => (
-                  <tr key={exp._id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                  <tr key={exp._id} className="border-b border-slate-50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors duration-200 ease-out">
                     <td className="px-4 py-3 font-medium text-slate-800 max-w-[200px] truncate">
                       {exp.description}
                     </td>
@@ -427,13 +427,13 @@ export default function Expense() {
                       <div className="flex gap-1 justify-end">
                         <button
                           onClick={() => openEdit(exp)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors duration-200 ease-out"
                         >
                           <Pencil size={14} />
                         </button>
                         <button
                           onClick={() => setDeleteTarget(exp)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors duration-200 ease-out"
                         >
                           <Trash2 size={14} />
                         </button>

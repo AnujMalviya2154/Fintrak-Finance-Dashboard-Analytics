@@ -88,10 +88,10 @@ export default function Dashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-slate-800">
+          <h1 className="text-xl font-bold text-slate-800 tracking-tight dark:text-slate-100">
             Good {getGreeting()}, {user?.name?.split(' ')[0] || 'there'} 👋
           </h1>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
             Here's your financial summary for this month
           </p>
         </div>
@@ -165,7 +165,7 @@ export default function Dashboard() {
             <><Skeleton className="h-5 w-40 mb-4" /><Skeleton className="h-48 w-full" /></>
           ) : (
             <>
-              <h2 className="text-sm font-semibold text-slate-700 mb-4">Monthly Overview</h2>
+              <h2 className="text-sm font-semibold text-slate-700 tracking-tight dark:text-slate-200 mb-4">Monthly Overview</h2>
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={areaData} barCategoryGap="30%">
                   <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
@@ -198,7 +198,7 @@ export default function Dashboard() {
             />
           ) : (
             <>
-              <h2 className="text-sm font-semibold text-slate-700 mb-4">Expense Breakdown</h2>
+              <h2 className="text-sm font-semibold text-slate-700 tracking-tight dark:text-slate-200 mb-4">Expense Breakdown</h2>
               <ResponsiveContainer width="100%" height={200}>
                 <PieChart>
                   <Pie
@@ -227,8 +227,8 @@ export default function Dashboard() {
       </div>
 
       {/* Recent transactions */}
-      <div className="bg-white rounded-xl border border-slate-100 p-5">
-        <h2 className="text-sm font-semibold text-slate-700 mb-4">Recent Transactions</h2>
+      <div className="bg-white rounded-xl border border-slate-100 p-5 shadow-sm">
+        <h2 className="text-sm font-semibold text-slate-700 tracking-tight mb-4">Recent Transactions</h2>
         {loading ? (
           <div className="space-y-3">
             {Array.from({ length: 5 }).map((_, i) => (
@@ -255,7 +255,7 @@ export default function Dashboard() {
               return (
                 <div
                   key={tx._id}
-                  className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-slate-50 transition-colors"
+                  className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-100 transition-colors duration-200 ease-out"
                 >
                   <div
                     className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${

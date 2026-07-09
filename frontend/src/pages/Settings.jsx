@@ -20,7 +20,7 @@ export default function Settings() {
 
       {/* Appearance */}
       <div className="bg-white rounded-xl border border-slate-100 p-6">
-        <h3 className="text-sm font-semibold text-slate-700 mb-4">Appearance</h3>
+        <h3 className="text-sm font-semibold text-slate-700 tracking-tight mb-4">Appearance</h3>
         <div className="flex items-center justify-between py-3 border-b border-slate-100 last:border-0">
           <div className="flex items-center gap-3">
             {darkMode ? <Moon size={16} className="text-slate-500" /> : <Sun size={16} className="text-slate-500" />}
@@ -46,7 +46,7 @@ export default function Settings() {
 
       {/* Notifications */}
       <div className="bg-white rounded-xl border border-slate-100 p-6">
-        <h3 className="text-sm font-semibold text-slate-700 mb-4">Notifications</h3>
+        <h3 className="text-sm font-semibold text-slate-700 tracking-tight mb-4">Notifications</h3>
         <div className="flex items-center justify-between py-3">
           <div className="flex items-center gap-3">
             <Bell size={16} className="text-slate-500" />
@@ -72,7 +72,7 @@ export default function Settings() {
 
       {/* Account info */}
       <div className="bg-white rounded-xl border border-slate-100 p-6">
-        <h3 className="text-sm font-semibold text-slate-700 mb-4">About</h3>
+        <h3 className="text-sm font-semibold text-slate-700 tracking-tight mb-4">About</h3>
         <div className="space-y-3 text-sm">
           <div className="flex justify-between">
             <span className="text-slate-500">Application</span>

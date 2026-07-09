@@ -17,7 +17,7 @@ export default function StatCard({
   if (loading) return <StatCardSkeleton />;
 
   return (
-    <div className="bg-white rounded-xl p-5 border border-slate-100 shadow-sm">
+    <div className="bg-white rounded-xl p-5 border border-slate-200/70 shadow-sm transition-[shadow,transform] duration-200 ease-out hover:-translate-y-[2px] hover:shadow-md">
       <div className="flex items-start justify-between mb-3">
         <p className="text-sm text-slate-500 font-medium">{title}</p>
         {Icon && (
