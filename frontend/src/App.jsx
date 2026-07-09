@@ -1,45 +1,53 @@
-/* eslint-disable no-unused-vars */
-import React,{useState} from 'react';
-import { Route,Routes } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from './context/AuthContext';
+
 import Layout from './components/Layout';
+import ProtectedRoute from './components/ProtectedRoute';
+
+import Landing from './pages/Landing';
+import Login from './pages/Login';
+import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
-import {useNavigate} from 'react-router-dom';
+import Income from './pages/Income';
+import Expense from './pages/Expense';
+import Profile from './pages/Profile';
+import Settings from './pages/Settings';
+import NotFound from './pages/NotFound';
 
-const App = () => {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
-  const navigate = useNavigate();
+export default function App() {
+  const { token } = useAuth();
 
-  const clearAuth = () => {
-    try{
-      localStorage.removeItem("user");
-      localStorage.removeItem("token");
-      sessionStorage.removeItem("user");
-      sessionStorage.removeItem("token");
-    }
-    catch(error){
-      console.error("clearAuth error:", error);
-    }
-    setUser(null);
-    setToken(null);
-  }
+  return (
+    <Routes>
+      {/* Public */}
+      <Route path="/" element={<Landing />} />
+      <Route
+        path="/login"
+        element={token ? <Navigate to="/app" replace /> : <Login />}
+      />
+      <Route
+        path="/register"
+        element={token ? <Navigate to="/app" replace /> : <Register />}
+      />
 
-  const handleLogout = () => {
-    clearAuth();
-    navigate("/login");
-  }
-  return(
-    <>
-      <Routes>
-          <Route element = {<Layout/>}>
-            
-            <Route path="/" element={<Dashboard/>}/>
-  
-          </Route>
-      </Routes>
-    </>
+      {/* Protected app shell */}
+      <Route
+        path="/app"
+        element={
+          <ProtectedRoute>
+            <Layout />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<Dashboard />} />
+        <Route path="income" element={<Income />} />
+        <Route path="expense" element={<Expense />} />
+        <Route path="profile" element={<Profile />} />
+        <Route path="settings" element={<Settings />} />
+      </Route>
 
-    )
-  }
-
-export default App
+      {/* 404 */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+}

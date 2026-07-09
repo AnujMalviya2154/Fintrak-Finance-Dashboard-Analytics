@@ -1,1 +1,92 @@
 @import "tailwindcss";
+
+/* ─────────────────────────────────────────
+   Global resets & base
+───────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--color-slate-50, #f8fafc);
+  color: var(--color-slate-800, #1e293b);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.dark {
+  --color-white: #0f172a; /* slate-900 */
+  --color-slate-50: #020617; /* slate-950 */
+  --color-slate-100: #1e293b; /* slate-800 */
+  --color-slate-200: #334155; /* slate-700 */
+  --color-slate-300: #475569; /* slate-600 */
+  --color-slate-400: #64748b; /* slate-500 */
+  --color-slate-500: #94a3b8; /* slate-400 */
+  --color-slate-600: #cbd5e1; /* slate-300 */
+  --color-slate-700: #e2e8f0; /* slate-200 */
+  --color-slate-800: #f1f5f9; /* slate-100 */
+  --color-slate-900: #f8fafc; /* slate-50 */
+  --color-slate-950: #ffffff; /* white */
+  
+  --color-indigo-50: #1e1b4b;
+  --color-indigo-100: #312e81;
+  --color-indigo-600: #818cf8;
+  
+  --color-emerald-50: #064e3b;
+  --color-emerald-600: #34d399;
+  
+  --color-rose-50: #4c0519;
+  --color-rose-600: #fb7185;
+}
+
+/* ─────────────────────────────────────────
+   Scrollbar
+───────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+}
+
+/* ─────────────────────────────────────────
+   Skeleton shimmer animation
+───────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #e2e8f0 25%,
+    #f1f5f9 50%,
+    #e2e8f0 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+/* ─────────────────────────────────────────
+   Number input — hide arrows
+───────────────────────────────────────── */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}

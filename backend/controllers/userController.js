@@ -115,7 +115,7 @@ export const changePassword = asyncHandler(async (req, res) => {
 
     const match = await bcrypt.compare(currentPassword, user.password);
     if (!match) {
-        throw new AppError('Current password is incorrect', 401);
+        throw new AppError('Current password is incorrect', 403);
     }
 
     user.password = await bcrypt.hash(newPassword, 10);
