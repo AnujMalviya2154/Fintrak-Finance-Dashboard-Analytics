@@ -96,10 +96,11 @@ The application was designed following modern full-stack development practices i
 - React 19
 - Vite
 - Tailwind CSS v4
-- React Router
+- React Router v7
 - Axios
 - Recharts
-- React Hot Toast
+- React Hook Form
+- Lucide React
 
 ---
 
@@ -249,15 +250,44 @@ npm run dev
 
 ## Environment Variables
 
-Create a `.env` file inside the backend folder.
+Create a `.env` file inside the **backend** folder:
 
 ```env
-PORT=5000
-
+PORT=4000
+NODE_ENV=development
 MONGO_URI=YOUR_MONGODB_CONNECTION_STRING
-
-JWT_SECRET=YOUR_SECRET_KEY
+JWT_SECRET=YOUR_LONG_RANDOM_SECRET
+TOKEN_EXPIRES=24h
+CLIENT_ORIGINS=
 ```
+
+Create a `.env` file inside the **frontend** folder:
+
+```env
+VITE_API_BASE_URL=http://localhost:4000/api
+```
+
+> Copy `.env.example` from each directory as a starting template.
+
+---
+
+# 🚀 Deployment
+
+## Frontend — Vercel
+
+1. Connect your GitHub repo to [Vercel](https://vercel.com).
+2. Set **Root Directory** to `frontend`.
+3. Set **Build Command** to `npm run build`.
+4. Set **Output Directory** to `dist`.
+5. Add environment variable: `VITE_API_BASE_URL=https://your-backend.onrender.com/api`.
+
+## Backend — Render
+
+1. Connect your GitHub repo to [Render](https://render.com).
+2. Set **Root Directory** to `backend`.
+3. Set **Start Command** to `node server.js`.
+4. Add all environment variables from `backend/.env.example`.
+5. Set `CLIENT_ORIGINS=https://your-app.vercel.app`.
 
 ---
 

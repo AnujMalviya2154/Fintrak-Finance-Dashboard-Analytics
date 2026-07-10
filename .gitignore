@@ -6,5 +6,18 @@ dist
 build
 coverage
 
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Editor artifacts
+.vscode/
+.idea/
+
 # Generated Excel exports — must never be committed (they can contain user data)
 *.xlsx
