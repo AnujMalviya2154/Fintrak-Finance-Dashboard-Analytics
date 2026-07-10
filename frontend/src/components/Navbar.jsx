@@ -1,12 +1,14 @@
 import { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronDown, LogOut, User, BarChart2 } from 'lucide-react';
+import { ChevronDown, LogOut, User, BarChart2, Moon, Sun } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { getInitials } from '../utils/formatters';
 
 export default function Navbar() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { darkMode, toggleDarkMode } = useTheme();
   const menuRef = useRef(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -41,8 +43,19 @@ export default function Navbar() {
           <span className="text-lg">Fintrak</span>
         </button>
 
-        {/* User menu */}
-        {user && (
+        {/* Right side: Theme toggle + User menu */}
+        <div className="flex items-center gap-1">
+          {/* Theme toggle */}
+          <button
+            onClick={toggleDarkMode}
+            aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            className="w-9 h-9 flex items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-colors duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+          >
+            {darkMode ? <Sun size={17} /> : <Moon size={17} />}
+          </button>
+
+          {/* User menu */}
+          {user && (
           <div className="relative" ref={menuRef}>
             <button
               onClick={() => setMenuOpen(o => !o)}
@@ -90,6 +103,7 @@ export default function Navbar() {
             )}
           </div>
         )}
+        </div>
       </div>
     </header>
   );
