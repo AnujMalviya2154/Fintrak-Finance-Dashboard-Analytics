@@ -293,7 +293,15 @@ VITE_API_BASE_URL=http://localhost:4000/api
 
 # 📸 Screenshots
 
-Add screenshots after deployment.
+<img width="1917" height="870" alt="image" src="https://github.com/user-attachments/assets/e96d24d4-f3e6-4d63-8f6b-60aeb0ec56bb" />
+<img width="1917" height="877" alt="image" src="https://github.com/user-attachments/assets/506c7d25-f507-45cd-9d04-10b943145bed" />
+<img width="1906" height="865" alt="image" src="https://github.com/user-attachments/assets/4589522f-30c1-4fef-8e99-fc4bc94a5c5d" />
+<img width="1916" height="862" alt="image" src="https://github.com/user-attachments/assets/882a5305-0c61-4cdc-bfe6-f9349694f124" />
+<img width="1915" height="870" alt="image" src="https://github.com/user-attachments/assets/88aae4c1-072c-4144-8462-7d6c8f9efec2" />
+<img width="1917" height="866" alt="image" src="https://github.com/user-attachments/assets/0178a172-dff6-4f4b-b510-a9cea4750e86" />
+
+
+
 
 Example:
 
