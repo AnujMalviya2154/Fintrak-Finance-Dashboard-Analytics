@@ -88,7 +88,7 @@ export default function Dashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-slate-800 tracking-tight dark:text-slate-100">
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight dark:text-slate-50">
             Good {getGreeting()}, {user?.name?.split(' ')[0] || 'there'} 👋
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
